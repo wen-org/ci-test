@@ -1,0 +1,16 @@
+name: hello-github-actions
+on:
+  push:
+    branches:
+      - "main"
+      #- "dev"
+      #- "tg_[0-9]*.[0-9]*_dev"
+jobs:
+  build-job:
+    runs-on: ubuntu-20.04
+    steps:
+    - name: trigger jenkins
+      run: |
+        curl  -X POST "http://192.168.50.165:30080/job/mlwb_e2e/buildWithParameters" \
+          --user wen.shen:114d3b74f2bc90915771f5366391ab1d87 \
+          --data TEST_ENV="http://35.193.234.109:14240" --data Branch="app-e2e-3.7.0"
