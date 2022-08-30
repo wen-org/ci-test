@@ -14,6 +14,7 @@ jobs:
       with:
         host: ${{ secrets.TESTSSH_HOST }}
         username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.FSERVERSSHKEY }}
         script: |
           curl  -X POST "http://192.168.50.165:30080/job/mlwb_e2e/buildWithParameters" \
           --user wen.shen:114d3b74f2bc90915771f5366391ab1d87 \
