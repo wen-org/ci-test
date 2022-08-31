@@ -9,7 +9,7 @@ jobs:
   build-job:
     runs-on: ubuntu-20.04
     steps:
-    - name: trigger jenkins1
+    - name: trigger jenkins2
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.TESTSSH_HOST }}
