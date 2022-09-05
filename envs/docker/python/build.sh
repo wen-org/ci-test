@@ -28,5 +28,5 @@ echo "---- Building image ----"
 docker build --build-arg VER=${version} -f ${framework}-${device}.Dockerfile -t qa-python:${version}-${framework}-${device} .
 
 echo "---- Pushing to docker hub ----"
-docker tag qa-python:${version}-${framework}-${device} tigergraphml/qa-python:${version}-${framework}-${device}
-docker push tigergraphml/qa-python:${version}-${framework}-${device}
+# docker tag qa-python:${version}-${framework}-${device} tigergraphml/qa-python:${version}-${framework}-${device}
+# docker push tigergraphml/qa-python:${version}-${framework}-${device}
