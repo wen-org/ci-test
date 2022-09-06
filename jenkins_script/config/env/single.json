@@ -1,0 +1,15 @@
+{
+  "nodes": ["m1"],
+  "gpe": {
+    "replicas": 1,
+    "nodes":["m1"]
+  },
+  "gse": {
+    "replicas":1,
+    "nodes": ["m1"]
+  },
+  "restpp": {
+    "replicas": 1,
+    "nodes": ["m1"]
+  }
+}

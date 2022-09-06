@@ -1,0 +1,35 @@
+{
+  "nodes.ip": {
+    "m1": "192.168.1.1",
+    "m2": "192.168.1.2",
+    "m3": "192.168.1.3",
+    "m4": "192.168.1.4"
+  },
+  "nodes.login": {
+    "m1": "sudoUserName1 sudoUserPassword1",
+    "m2": "sudoUserName2 sudoUserPassword2",
+    "m3": "sudoUserName3 sudoUserPassword3",
+    "m4": "sudoUserName4 sudoUserPassword4"
+  },
+  "tigergraph.user.name": "tigergraph",
+  "tigergraph.user.password": "tigergraph",
+  "tigergraph.root.dir": "/home/tigergraph/tigergraph",
+  "license.key": "3DaysTrialOrOfficialLicenseKeyStringWithMoreThan70Characters",
+  "gpe.server": {
+    "replicas": 1,
+    "nodes": ["m1","m2","m3","m4"]
+  },
+  "gse.server": {
+    "replicas": 1,
+    "nodes": ["m1","m2","m3","m4"]
+  },
+  "restpp.server": {
+    "nodes": ["m1","m2","m3","m4"]
+  },
+  "zk.server": {
+    "nodes": ["m1", "m2", "m3"]
+  },
+  "kafka.server": {
+    "nodes": ["m1", "m2", "m3"]
+  }
+}
