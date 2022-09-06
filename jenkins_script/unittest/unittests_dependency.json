@@ -1,0 +1,20 @@
+{
+  "product": "demo",
+  "er": "demo rls",
+  "bigtest": "blackbox gpe gse rest zk gdict gadmin ium gutil gle gbar vis blue_features demo rls",
+  "gui": "vis demo",
+  "realtime": "rest gbar vis blue_features demo",
+  "gse": "gpe gse rest gutil gbar blue_features demo",
+  "gpe": "gpe gse rest gutil gbar blue_features demo",
+  "topology": "gpe gse rest gutil gbar blue_features demo",
+  "olgp": "gpe gse rest gutil gbar blue_features demo",
+  "tut": "gpe gse rest gutil gbar blue_features demo",
+  "utility": "gpe gse rest zk gdict gadmin gutil gbar blue_features demo rls",
+  "blue_commons": "gpe rest gbar blue_features demo",
+  "blue_features": "gpe rest gbar blue_features demo",
+  "third_party": "gpe gse rest zk gdict gadmin ium gutil gle gbar vis blue_features demo rls",
+  "gium": "rls zk gdict gadmin ium gbar",
+  "glive": "gbar vis",
+  "gle": "blackbox gle gbar vis blue_features demo",
+  "document": "demo"
+}

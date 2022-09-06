@@ -1,0 +1,56 @@
+#!/bin/groovy
+
+JOB_NAME_SELF = "parallel_test_pipeline"
+JOB_ID_SELF = "test_job"
+
+currentBuild.displayName = "#${currentBuild.number} ${USER_NAME} parallel job " +
+    "${OS} for ${JOB_ID}#${BUILD_NUMBER}: ${UNITTESTS}"
+
+node (MACHINE) {
+  timestamps {
+    wrap([$class: 'AnsiColorBuildWrapper']) {
+      lock('end2end_test_' + env.NODE_NAME) {
+        // each slave machine can only have one runing testing instance
+
+        product_dir = "${env.HOME}/product"
+        bigtest_dir = "${product_dir}/bigtest"
+        def start_t = new Date()
+
+        // update bigtest to get the latest MIT code
+        sh """
+          cd ${bigtest_dir}
+          git reset --hard && git fetch --all && git checkout ${BIGTEST_BASE_BRANCH}
+          git reset origin/${BIGTEST_BASE_BRANCH} --hard
+        """
+
+        UTIL = load("${bigtest_dir}/jenkins_script/JenkinsFiles/src/util.groovy")
+        UTIL.init()
+        JOB = load("${bigtest_dir}/jenkins_script/JenkinsFiles/src/job.groovy")
+
+        try {
+          UTIL.pre_pipeline()
+          JOB.pre_job()
+        } catch (err) {
+          if (UTIL.check_if_aborted() == false) {
+            UTIL.notification(PARAM, 'FAIL', USER_NAME, hipchat_test_room, ["Reason":
+                "Preparation before starting job failed"])
+          }
+          echo 'Preparation before starting job failed'
+          throw err
+        }
+
+        try {
+          JOB.stage_gworkspace()
+          JOB.stage_install()
+          JOB.stage_component_test()
+          JOB.stage_integration_test()
+
+        } catch (err) {
+          JOB.job_failed(err)
+          throw err
+        }
+        JOB.job_success(start_t)
+      }
+    } //AnsiColorBuildWrapper
+  } //timestamps
+} //node

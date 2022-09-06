@@ -1,0 +1,55 @@
+#!/bin/groovy
+
+JOB_NAME_SELF = "build_pkg_pipeline"
+JOB_ID_SELF = "build_job"
+
+currentBuild.displayName = "#${currentBuild.number} ${USER_NAME} ${MACHINE} build job for" +
+      " ${JOB_ID}#${BUILD_NUMBER} "
+
+node (MACHINE) {
+  timestamps {
+    wrap([$class: 'AnsiColorBuildWrapper']) {
+      // each slave machine can only have one runing testing instance
+      lock('end2end_build_' + env.NODE_NAME) {
+        product_dir = "${env.HOME}/product"
+        bigtest_dir = "${product_dir}/bigtest"
+
+        def start_t = new Date()
+
+        // update bigtest to get the latest MIT code
+        sh """
+          rm -rf ${product_dir}
+          ln -s ${env.HOME}/${PROJECT_VERSION}_product ${product_dir}
+          cd ${bigtest_dir}
+          git reset --hard && git fetch --all && git checkout ${BIGTEST_BASE_BRANCH}
+          git reset origin/${BIGTEST_BASE_BRANCH} --hard
+        """
+
+        UTIL = load("${bigtest_dir}/jenkins_script/JenkinsFiles/src/util.groovy")
+        UTIL.init()
+        JOB = load("${bigtest_dir}/jenkins_script/JenkinsFiles/src/job.groovy")
+
+        try {
+          UTIL.pre_pipeline()
+          JOB.pre_job()
+        } catch (err) {
+          if (UTIL.check_if_aborted() == false) {
+            UTIL.notification(PARAM, 'FAIL', USER_NAME, hipchat_test_room, ["Reason":
+                "Preparation before starting job failed"])
+          }
+          echo 'Preparation before starting job failed'
+          throw err
+        }
+
+        try {
+          JOB.stage_gworkspace()
+          JOB.stage_build()
+        } catch (err) {
+          JOB.job_failed(err)
+          throw err
+        }
+        JOB.job_success(start_t)
+      } //lock
+    } //AnsiColorBuildWrapper
+  } //timestamps
+} //node
