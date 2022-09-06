@@ -1,0 +1,22 @@
+{
+  "GIT_USER": "qa-tigergraph",
+  "GIT_TOKEN": "5d823fd1a69ae41d72244b92d9890ba98d2bb863",
+  "JENKINS_IP": "192.168.11.191",
+  "JENKINS_PORT": "8080",
+  "MASTER_MACHINE_USERNAME_PWD": "graphsql:graphsql",
+  "log_review_machine": "192.168.11.191",
+  "hipchat_test_room": "TigerGraph Testing Status",
+  "qa_stable_tag": "stable",
+  "qa_User": "QA Duty",
+  "log_dir": "/mnt/nfs_datapool/mitLogs",
+  "all_unittests": "blackbox gadmin zk gle gpe gutil gdict rest ium gse gbar vis blue_features demo rls",
+  "jenkins_account": "qa_build",
+  "jenkins_pwd": "682b2a447f8d15bdb9cf03bf5a8f7614",
+  "rest_server_address": "192.168.55.60:8888",
+  "default_debug_time": 24,
+  "user_throttle": 3,
+  "diff_whitelist": ["graphsql.atlassian.net"],
+  "diff_blacklist": ["graphsql"],
+  "labelPrefix": {"build": "build", "test": "test", "hourly": "hourly"},
+  "test_machine_user": "graphsql"
+}

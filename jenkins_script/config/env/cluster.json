@@ -1,0 +1,18 @@
+{
+  "nodes": [
+    "m1",
+    "m2"
+  ],
+  "gpe": {
+    "replicas": 1,
+    "nodes":["m1","m2"]
+  },
+  "gse": {
+    "replicas":1,
+    "nodes": ["m1","m2"]
+  },
+  "restpp": {
+    "replicas": 1,
+    "nodes": ["m1","m2"]
+  }
+}

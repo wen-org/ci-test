@@ -1,0 +1,39 @@
+# Create graph
+CREATE GRAPH imdb()
+USE GRAPH imdb
+
+# Create schema for nodes and edges  
+CREATE SCHEMA_CHANGE JOB imdb_job FOR GRAPH imdb {
+    ADD VERTEX movie(PRIMARY_ID id INT, x LIST<INT>, y INT, train_mask BOOL, val_mask BOOL, test_mask BOOL) WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true";
+    ADD VERTEX actor(PRIMARY_ID id INT, x LIST<INT>) WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true";
+    ADD VERTEX director(PRIMARY_ID id INT, x LIST<INT>) WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true";
+
+    ADD DIRECTED EDGE actor_movie(FROM actor, TO movie);
+    ADD DIRECTED EDGE director_movie(FROM director, TO movie);
+    ADD DIRECTED EDGE movie_actor(FROM movie, TO actor);
+    ADD DIRECTED EDGE movie_director(FROM movie, TO director);
+}
+
+RUN SCHEMA_CHANGE JOB imdb_job
+
+# Define data loading job
+CREATE LOADING JOB load_imdb_data FOR GRAPH imdb {
+    DEFINE FILENAME movie_csv="./movie.csv";
+    DEFINE FILENAME actor_csv="./actor.csv";
+    DEFINE FILENAME director_csv="./director.csv";
+    DEFINE FILENAME actor_movie_csv="./actor_movie.csv";
+    DEFINE FILENAME director_movie_csv="./director_movie.csv";
+    DEFINE FILENAME movie_actor_csv="./movie_actor.csv";
+    DEFINE FILENAME movie_director_csv="./movie_director.csv";
+
+    LOAD movie_csv TO VERTEX movie VALUES ($"id", SPLIT($"x"," "), $"y", $"train_mask", $"val_mask", $"test_mask") USING header="true", separator=",";
+    LOAD actor_csv TO VERTEX actor VALUES ($"id", SPLIT($"x"," ")) USING header="true", separator=",";
+    LOAD director_csv TO VERTEX director VALUES ($"id", SPLIT($"x"," ")) USING header="true", separator=",";
+    LOAD actor_movie_csv TO EDGE actor_movie VALUES ($"source", $"target") USING header="true", separator=",";
+    LOAD director_movie_csv TO EDGE director_movie VALUES ($"source", $"target") USING header="true", separator=",";
+    LOAD movie_actor_csv TO EDGE movie_actor VALUES ($"source", $"target") USING header="true", separator=",";
+    LOAD movie_director_csv TO EDGE movie_director VALUES ($"source", $"target") USING header="true", separator=",";
+}
+
+# Load data
+RUN LOADING JOB load_imdb_data

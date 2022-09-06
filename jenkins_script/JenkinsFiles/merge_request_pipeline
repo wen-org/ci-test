@@ -1,0 +1,54 @@
+#!/bin/groovy
+
+JOB_NAME = "merge_request_pipeline"
+JOB_ID = "MIT"
+JOB_NAME_SELF = JOB_NAME
+JOB_ID_SELF = JOB_ID
+
+currentBuild.displayName = "#${currentBuild.number} ${USER_NAME} MIT: ${PARAM}"
+if (UNITTESTS != 'default' || INTEGRATION != 'default') {
+  currentBuild.displayName = "#${currentBuild.number} ${USER_NAME} customized " +
+      " MIT for ${UNITTESTS} & ${INTEGRATION} & ${PARAM}"
+}
+
+node ('master') {
+  timestamps {
+    product_dir = "${env.HOME}/${PROJECT_VERSION}_product"
+    // bigtest workspace: different pipeline different bigtest folder
+    bigtest_workspace="${env.HOME}/bigtest_workspace"
+    bigtest_dir = "${bigtest_workspace}/bigtest_${JOB_ID}_${currentBuild.number}"
+
+    def start_t = new Date()
+
+    // update bigtest to get the latest MIT code
+    sh """
+      mkdir -p ${bigtest_workspace}
+      find ${bigtest_workspace} -maxdepth 1 -mindepth 1 -type d -mtime +5 | xargs rm -rf
+      cp -rf ${product_dir}/bigtest ${bigtest_dir}
+      cd ${bigtest_dir}
+      git reset --hard && git fetch --all && git checkout ${BIGTEST_BASE_BRANCH}
+      git reset origin/${BIGTEST_BASE_BRANCH} --hard
+    """
+
+    UTIL = load("${bigtest_dir}/jenkins_script/JenkinsFiles/src/util.groovy")
+    UTIL.init()
+    STAGE = load("${bigtest_dir}/jenkins_script/JenkinsFiles/src/stage.groovy")
+
+    try {
+      UTIL.pre_pipeline()
+
+      STAGE.stage_QA_check()
+      STAGE.stage_validate()
+      STAGE.stage_parallel_testing()
+
+      // notify user test pass, and let qa approve the pull request
+      UTIL.notification(PARAM, 'PASS', USER_NAME, 'none', ["Result": 'MIT Test passed! Waiting for merging'])
+      STAGE.stage_merge()
+
+    } catch(err) {
+      STAGE.once_failed(err)
+      throw err
+    }
+    STAGE.once_success(start_t, 'MIT Merge succeed!!')
+  }
+}
